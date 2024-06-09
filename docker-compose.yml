@@ -1,41 +1,4 @@
-version: '3.8'
-
 services:
-  moodle:
-    # La versión de aules a 2024/06 es 3.11.17+ (Build: 20231201) (se ve en los backup)
-    # image: moodlehq/moodleapp:3.9.5
-    # image: moodlehq/moodle-php-apache:8.0
-    image: bitnami/moodle:latest
-    ports:
-      - "8080:80"
-    volumes:
-      - moodledata:/var/www/moodledata
-      # - ./moodle/config.php:/var/www/html/config.php
-    environment:
-      - MOODLE_URL=http://localhost:8080
-      - DB_TYPE=mariadb
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_NAME=moodle
-      - DB_USER=moodle
-      - DB_PASS=moodle_password
-      - MOODLE_ADMIN=admin
-      - MOODLE_PASSWORD=admin_password
-      - MOODLE_EMAIL=admin@example.com
-      - MOODLE_DATABASE_USER=moodle
-      - MOODLE_DATABASE_PASSWORD=moodle_password
-    depends_on:
-      - db
-
-  db:
-    image: mariadb:latest
-    environment:
-      - MYSQL_DATABASE=moodle
-      - MYSQL_USER=moodle
-      - MYSQL_PASSWORD=moodle_password
-      - MYSQL_ROOT_PASSWORD=root_password
-    volumes:
-      - dbdata:/var/lib/mysql
 
   app:
     build: .
@@ -44,6 +7,36 @@ services:
     ports:
       - "5000:5000"
 
+  mariadb:
+    image: 'bitnami/mariadb:latest'
+    environment:
+      - MARIADB_ROOT_PASSWORD=my_password
+      - MARIADB_USER=bn_moodle
+      - MARIADB_PASSWORD=my_password
+      - MARIADB_DATABASE=bitnami_moodle
+    volumes:
+      - 'mariadb_data:/bitnami/mariadb'
+
+  moodle:
+    image: 'bitnami/moodle:latest'
+    environment:
+      # - MOODLE_USERNAME=admin
+      # - MOODLE_PASSWORD=admin
+      - MOODLE_DATABASE_HOST=mariadb
+      - MOODLE_DATABASE_PORT_NUMBER=3306
+      - MOODLE_DATABASE_USER=bn_moodle
+      - MOODLE_DATABASE_PASSWORD=my_password
+      - MOODLE_DATABASE_NAME=bitnami_moodle
+    ports:
+      - '8080:8080'
+      - '8443:8443'
+    volumes:
+      - 'moodle_data:/bitnami/moodle'
+    depends_on:
+      - mariadb
+
 volumes:
-  moodledata:
-  dbdata:
+  mariadb_data:
+    driver: local
+  moodle_data:
+    driver: local
