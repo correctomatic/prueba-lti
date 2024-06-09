@@ -36,6 +36,10 @@ app = Flask(__name__)
 @app.route('/launch', methods=['POST'])
 def launch():
     uri, http_method, body, headers = request.url, request.method, request.form, request.headers
+
+    # Log the headers to check their format
+    app.logger.debug(f"Headers: {headers}")
+    
     valid, oauth_request = endpoint.validate_request(uri, http_method, body, headers)
     if not valid:
         return 'Unauthorized', 401
