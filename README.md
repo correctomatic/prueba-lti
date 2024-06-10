@@ -1,4 +1,6 @@
 
+
+
 ## Ejemplos
 
 parece muy antiguo:
@@ -17,6 +19,23 @@ https://edutechdev.com/2023/11/23/build-a-simple-lms-integrated-quiz-app-using-p
 
 
 https://edutechdev.com/2023/02/10/lti-moodle-integration-using-pylti-1-3-flask-game-example/
+
+
+## Generate key pairs
+
+Using OpenSSL
+Generate a Private Key:
+
+```sh
+openssl genpkey -algorithm RSA -out private.key
+```
+This command generates an RSA private key and saves it to a file named private.key.
+
+Generate the Corresponding Public Key:
+```sh
+openssl rsa -pubout -in private.key -out public.key
+```
+This command extracts the public key from the private key and saves it to a file named public.key.
 
 
 ## Notas
