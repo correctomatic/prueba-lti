@@ -1,74 +1,41 @@
-import os, pprint, datetime
-from tempfile import mkdtemp
+from flask import Flask, request, render_template_string
+from pylti1p3.contrib.flask import FlaskOIDCLogin, FlaskRequest
+import json
 
-# from questions import questions
-# from dbmethods import drop_db_table, create_db_table, get_questions, get_question_by_id, insert_quiz_question, update_question, delete_question
+app = Flask(__name__)
 
-from flask import Flask, request, jsonify, render_template, url_for
-from flask_cors import CORS
-from flask_caching import Cache
-
-from werkzeug.exceptions import Forbidden
-from werkzeug.utils import redirect
-from pylti1p3.contrib.flask import FlaskOIDCLogin, FlaskMessageLaunch, FlaskRequest, FlaskCacheDataStorage
-from pylti1p3.deep_link_resource import DeepLinkResource
-from pylti1p3.grade import Grade
-from pylti1p3.lineitem import LineItem
-from pylti1p3.tool_config import ToolConfJsonFile
-from pylti1p3.registration import Registration
-
-class ReverseProxied:
-    def __init__(self, app):
-        self.app = app
-
-    def __call__(self, environ, start_response):
-        scheme = environ.get('HTTP_X_FORWARDED_PROTO')
-        if scheme:
-            environ['wsgi.url_scheme'] = scheme
-        return self.app(environ, start_response)
-
-app = Flask(__name__,
-            static_url_path='',
-            static_folder='./frontend/static',
-            template_folder='./frontend/templates')
-
-CORS(app, resources={r"/*": {"origins": "*"}})
-
-app.wsgi_app = ReverseProxied(app.wsgi_app)
-
+# LTI 1.3 configuration
 config = {
-    "DEBUG": True,
-    "ENV": "development",
-    "CACHE_TYPE": "simple",
-    "CACHE_DEFAULT_TIMEOUT": 600,
-    "SECRET_KEY": "3dj90jdwi0d320edj9d",
-    "SESSION_TYPE": "filesystem",
-    "SESSION_FILE_DIR": mkdtemp(),
-    "SESSION_COOKIE_NAME": "pylti1p3-flask-app-sessionid",
-    "SESSION_COOKIE_HTTPONLY": True,
-    "SESSION_COOKIE_SECURE": False,   # should be True in case of HTTPS usage (production)
-    "SESSION_COOKIE_SAMESITE": None,  # should be 'None' in case of HTTPS usage (production)
-    "DEBUG_TB_INTERCEPT_REDIRECTS": False
+    "issuer": "https://platform.example.com",
+    "client_id": "your_client_id",
+    "auth_server": "https://platform.example.com/auth/token",
+    "keyset_url": "https://platform.example.com/keys"
 }
-app.config.from_mapping(config)
-cache = Cache(app)
 
+# Initialize FlaskOIDCLogin
+lti = FlaskOIDCLogin(app, request_validator=None, config=config)
 
-def get_lti_config_path():
-    return os.path.join(app.root_path, 'configs', 'reactquiz.json')
+@app.route('/lti_launch', methods=['POST'])
+@lti.validate()
+def lti_launch():
+    lti_launch_data = FlaskRequest(request).to_dict()
 
-def get_launch_data_storage():
-    return FlaskCacheDataStorage(cache)
+    # Extract LTI launch parameters
+    context_id = lti_launch_data.get('context_id')
+    user_id = lti_launch_data.get('user_id')
+    roles = lti_launch_data.get('roles')
+    user_name = lti_launch_data.get('lis_person_name_full')
+    user_email = lti_launch_data.get('lis_person_contact_email_primary')
 
-def get_jwk_from_public_key(key_name):
-    key_path = os.path.join(app.root_path, '..', 'configs', key_name)
-    f = open(key_path, 'r')
-    key_content = f.read()
-    jwk = Registration.get_jwk(key_content)
-    f.close()
-    return jwk
+    # Render a simple response page
+    return render_template_string("""
+        <h1>LTI Launch Successful</h1>
+        <p>Context ID: {{ context_id }}</p>
+        <p>User ID: {{ user_id }}</p>
+        <p>Roles: {{ roles }}</p>
+        <p>User Name: {{ user_name }}</p>
+        <p>User Email: {{ user_email }}</p>
+    """, context_id=context_id, user_id=user_id, roles=roles, user_name=user_name, user_email=user_email)
 
-if __name__ == "__main__":
-    #app.debug = True
-    #app.run(debug=True)
-    app.run()
+if __name__ == '__main__':
+    app.run(debug=True)
