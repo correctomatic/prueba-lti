@@ -1,54 +1,74 @@
-# app.py
-from flask import Flask, request, render_template_string
-import logging
+import os, pprint, datetime
+from tempfile import mkdtemp
 
-import oauthlib.oauth1
-from oauthlib.oauth1 import RequestValidator, SignatureOnlyEndpoint
+# from questions import questions
+# from dbmethods import drop_db_table, create_db_table, get_questions, get_question_by_id, insert_quiz_question, update_question, delete_question
 
-logging.basicConfig(level=logging.DEBUG)
+from flask import Flask, request, jsonify, render_template, url_for
+from flask_cors import CORS
+from flask_caching import Cache
 
-class LTIRequestValidator(RequestValidator):
-    def __init__(self, consumers):
-        self.consumers = consumers
+from werkzeug.exceptions import Forbidden
+from werkzeug.utils import redirect
+from pylti1p3.contrib.flask import FlaskOIDCLogin, FlaskMessageLaunch, FlaskRequest, FlaskCacheDataStorage
+from pylti1p3.deep_link_resource import DeepLinkResource
+from pylti1p3.grade import Grade
+from pylti1p3.lineitem import LineItem
+from pylti1p3.tool_config import ToolConfJsonFile
+from pylti1p3.registration import Registration
 
-    def get_client_secret(self, client_key, request):
-        return self.consumers.get(client_key)
+class ReverseProxied:
+    def __init__(self, app):
+        self.app = app
 
-    def validate_client_key(self, client_key, request):
-        return client_key in self.consumers
+    def __call__(self, environ, start_response):
+        scheme = environ.get('HTTP_X_FORWARDED_PROTO')
+        if scheme:
+            environ['wsgi.url_scheme'] = scheme
+        return self.app(environ, start_response)
 
-    def validate_request(self, request):
-        return True
+app = Flask(__name__,
+            static_url_path='',
+            static_folder='./frontend/static',
+            template_folder='./frontend/templates')
 
-    def validate_timestamp_and_nonce(self, client_key, timestamp, nonce, request, request_token=None, access_token=None):
-        # For simplicity, we're not checking for nonce reuse here.
-        return True
+CORS(app, resources={r"/*": {"origins": "*"}})
 
-consumers = {
-    'your_consumer_key': 'your_consumer_secret'
+app.wsgi_app = ReverseProxied(app.wsgi_app)
+
+config = {
+    "DEBUG": True,
+    "ENV": "development",
+    "CACHE_TYPE": "simple",
+    "CACHE_DEFAULT_TIMEOUT": 600,
+    "SECRET_KEY": "3dj90jdwi0d320edj9d",
+    "SESSION_TYPE": "filesystem",
+    "SESSION_FILE_DIR": mkdtemp(),
+    "SESSION_COOKIE_NAME": "pylti1p3-flask-app-sessionid",
+    "SESSION_COOKIE_HTTPONLY": True,
+    "SESSION_COOKIE_SECURE": False,   # should be True in case of HTTPS usage (production)
+    "SESSION_COOKIE_SAMESITE": None,  # should be 'None' in case of HTTPS usage (production)
+    "DEBUG_TB_INTERCEPT_REDIRECTS": False
 }
+app.config.from_mapping(config)
+cache = Cache(app)
 
-validator = LTIRequestValidator(consumers)
-endpoint = SignatureOnlyEndpoint(validator)
 
-app = Flask(__name__)
+def get_lti_config_path():
+    return os.path.join(app.root_path, 'configs', 'reactquiz.json')
 
-@app.route('/launch', methods=['POST'])
-def launch():
-    uri, http_method, body, headers = request.url, request.method, request.form, request.headers
+def get_launch_data_storage():
+    return FlaskCacheDataStorage(cache)
 
-    # Log the headers to check their format
-    app.logger.debug(f"Headers: {headers}")
-    
-    valid, oauth_request = endpoint.validate_request(uri, http_method, body, headers)
-    if not valid:
-        return 'Unauthorized', 401
+def get_jwk_from_public_key(key_name):
+    key_path = os.path.join(app.root_path, '..', 'configs', key_name)
+    f = open(key_path, 'r')
+    key_content = f.read()
+    jwk = Registration.get_jwk(key_content)
+    f.close()
+    return jwk
 
-    return render_template_string('<h1>LTI Launch Successful</h1>')
-
-@app.route('/')
-def index():
-    return 'Welcome to the LTI Tool'
-
-if __name__ == '__main__':
-    app.run(host="0.0.0.0",debug=True)
+if __name__ == "__main__":
+    #app.debug = True
+    #app.run(debug=True)
+    app.run()

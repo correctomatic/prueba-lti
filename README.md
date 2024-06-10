@@ -37,3 +37,7 @@ default user/bitnami
 curl -sSL https://raw.githubusercontent.com/bitnami/containers/main/bitnami/moodle/docker-compose.yml
 
 
+### Configuracion herramienta externa
+
+Se accede desde el navegador local:
+http://localhost:5000/launch
