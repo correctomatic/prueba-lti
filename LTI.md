@@ -7,6 +7,21 @@ Basicos:
 https://www.imsglobal.org/basic-overview-how-lti-works
 
 
+Versión 1.3:
+https://medium.com/voxy-engineering/introduction-to-lti-1-3-270f17505d75
+
+
+https://www.edspirit.com/a-complete-guide-to-learning-tools-interoperability
+
+**OJO, parece que Aules soporta la versión lti_version=LTI-1p0**
+https://www.imsglobal.org/specs/ltiv1p0/implementation-guide
+
+
+
+Consumer key: this-is-the-consumer-key
+Shared secret: this-is-the-shared-secret
+
+
 Flujo:
 - Se recibe una petición launch enviada desde el LMS
 
@@ -40,10 +55,16 @@ oauth_version=1.0&oauth_nonce=c25315a36c2c59ad8ca68a4b17a8b133&oauth_timestamp=1
 Parameters:
 **Se le pueden pasar más parámetros**, tiene un campo en moodle donde le puedes pasar pares variable/valor, uno por línea
 ```sh
-oauth_version=1.0
-oauth_nonce=c25315a36c2c59ad8ca68a4b17a8b133
-oauth_timestamp=1718020826
+lti_version=LTI-1p0
+
 oauth_consumer_key=this-is-the-consumer-key
+oauth_signature_method=HMAC-SHA1
+oauth_timestamp=1718020826
+oauth_nonce=c25315a36c2c59ad8ca68a4b17a8b133
+oauth_callback=about%3Ablank
+oauth_signature=T%2FlTuvk11WE2pm4peWwbQWbg6HA%3D
+oauth_version=1.0
+
 user_id=2
 lis_person_sourcedid=
 roles=Instructor%2Curn%3Alti%3Asysrole%3Aims%2Flis%2FAdministrator%2Curn%3Alti%3Ainstrole%3Aims%2Flis%2FAdministrator
@@ -60,8 +81,6 @@ launch_presentation_locale=en
 ext_lms=moodle-2
 tool_consumer_info_product_family_code=moodle
 tool_consumer_info_version=2024042201
-oauth_callback=about%3Ablank
-lti_version=LTI-1p0
 tool_consumer_instance_guid=localhost
 tool_consumer_instance_name=New+Site
 tool_consumer_instance_description=New+Site
@@ -72,7 +91,5 @@ custom_custom_param_2=value_param_2
 
 launch_presentation_document_target=iframe
 launch_presentation_return_url=http%3A%2F%2Flocalhost%3A8080%2Fmod%2Flti%2Freturn.php%3Fcourse%3D2%26launch_container%3D3%26instanceid%3D1%26sesskey%3DlUGKINVHi2
-oauth_signature_method=HMAC-SHA1
-oauth_signature=T%2FlTuvk11WE2pm4peWwbQWbg6HA%3D
 ```
 
