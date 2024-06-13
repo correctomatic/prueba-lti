@@ -1,3 +1,6 @@
+<moodle_release>3.11.17+ (Build: 20231201)</moodle_release>
+
+
 ### LTI
 
 https://www.1edtech.org/standards/lti
@@ -93,3 +96,45 @@ launch_presentation_document_target=iframe
 launch_presentation_return_url=http%3A%2F%2Flocalhost%3A8080%2Fmod%2Flti%2Freturn.php%3Fcourse%3D2%26launch_container%3D3%26instanceid%3D1%26sesskey%3DlUGKINVHi2
 ```
 
+
+
+
+
+
+----------------------------------------------------------------------------
+
+Requests, vídeo 3:
+
+1) Del navegador a la plataforma
+init login, del browser al LMS: (a una de las valid redirect URI?)
+    iss: origen
+    login_hint: ¿?
+    target_link_uri: a dónde se quiere conectar
+
+2) Del navegador a learning tool:
+¿algo de oidc?
+authentication request
+    client_id: (el de moodle)
+    redirect_uri: ¿donde tiene que enviar la respuesta de autentificación? https://tool/lti
+    login_hint: ¿?
+    nonce: para evitar cross forgery
+
+3) Del navegador al LMS
+    Redirige la respuesta del learning tool?
+
+4) Del LMS al navegador, con el id_token
+
+5) Del navegador al learning tool, con el id token
+    Se valida signatura, expiración, xsrf, etc.
+
+6) Del learning tool al navegador, con el contenido
+
+
+Parece que está fallando en la petición 3, al llamar a lti auth
+http://localhost:8080/mod/lti/auth.php?scope=openid&response_type=id_token&response_mode=form_post&prompt=none&client_id=35BKAOcTCin0Nvd&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Flaunch%2F&state=state-46181b9c-78e8-48f4-b63c-92b10622e16e&nonce=e7bc71424ab046988e40f675f91fe508b05875cc289611efa67bb30cb08535e9&login_hint=2&lti_message_hint=%7B%22cmid%22%3A2%2C%22launchid%22%3A%22ltilaunch1_1111759003%22%7D
+
+He habilitado, en Plugins del site administration:
+- Manage authentication / Available authentication plugins / LTI
+No ha funcionado, en algún post he visto que no está para eso
+
+https://moodle.org/mod/forum/discuss.php?d=455240
