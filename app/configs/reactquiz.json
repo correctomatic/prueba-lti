@@ -1,7 +1,7 @@
 {
   "http://localhost:8080": [{
     "default": true,
-    "client_id": "C9GZzV06wxKVlWB",
+    "client_id": "SbuFbtDBM3KvB2k",
     "auth_login_url": "http://localhost:8080/mod/lti/auth.php",
     "auth_token_url": "http://localhost:8080/mod/lti/token.php",
     "auth_audience": null,
