@@ -3,6 +3,7 @@ from jwcrypto import jwk
 from tempfile import mkdtemp
 
 
+
 # from questions import questions
 # from dbmethods import drop_db_table, create_db_table, get_questions, get_question_by_id, insert_quiz_question, update_question, delete_question
 
@@ -128,10 +129,8 @@ In the context of LTI (Learning Tools Interoperability) 1.3,
 the scopes section in the /config endpoint results defines the permissions that the tool is requesting from the platform
 (such as Moodle). These scopes specify the access rights the tool needs to perform various operations.
 
-
+(En principio esto no lo uso)
 """
-
-
 @app.route("/config", methods=["GET"])
 def config():
     tool_configuration = {
@@ -176,6 +175,25 @@ def jwks():
     return jsonify(jwks)
 
 if __name__ == "__main__":
-    # app.debug = True
-    app.run(debug=True, host="0.0.0.0")
-    # app.run()
+
+
+    #-------------------------------------------------------------------------
+    # Remote debugging with VS Code
+    #-------------------------------------------------------------------------
+    import debugpy
+    debugger_attached_env_var = 'DEBUGGER_ATTACHED'
+    # Check if the debugger is not already attached
+    if os.getenv(debugger_attached_env_var) != '1':
+        debugpy.listen(("0.0.0.0", 5678))
+        print("Waiting for debugger attach...")
+        # debugpy.wait_for_client()
+
+        # Set the environment variable to indicate debugger attachment
+        os.environ[debugger_attached_env_var] = '1'
+    #-------------------------------------------------------------------------
+
+    try:
+        app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=True)
+    # The exception is for avoiding pausing the debugger when the app reloads
+    except SystemExit as e:
+        pass

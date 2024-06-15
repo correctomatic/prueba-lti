@@ -6,3 +6,13 @@ services:
       - ./app:/app
     ports:
       - "5000:5000"
+      - "5678:5678"  # vscode debugger
+    networks:
+      - moodle-development_internal
+
+networks:
+  # This is the name of the network used by the moodle's docker-compose.yml
+  # The app MUST be in the same network as the moodle, because moodle
+  # makes requests to the app from moodle's container
+  moodle-development_internal:
+    external: true
