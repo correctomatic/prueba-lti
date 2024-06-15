@@ -1,7 +1,13 @@
 <moodle_release>3.11.17+ (Build: 20231201)</moodle_release>
 
-
 ### LTI
+
+DIAGRAMA MUY BUENO CON EXPLICACIONES!!!:
+https://blackboard.github.io/lti/tutorials/implementation-guide
+
+
+Especificacion:
+https://www.imsglobal.org/spec/lti/v1p3/
 
 https://www.1edtech.org/standards/lti
 
