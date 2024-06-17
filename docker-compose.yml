@@ -2,17 +2,23 @@ services:
 
   app:
     build: .
+    container_name: lti_app
     volumes:
       - ./app:/app
     ports:
       - "5000:5000"
       - "5678:5678"  # vscode debugger
     networks:
-      - moodle-development_internal
+      lti_network:
+        # This address is defined in the moodle's dns container
+        # in the file dnsmasq.conf. This MUST be the same address.
+        ipv4_address: 172.20.0.10
+    dns: 172.20.0.100
+
 
 networks:
   # This is the name of the network used by the moodle's docker-compose.yml
   # The app MUST be in the same network as the moodle, because moodle
   # makes requests to the app from moodle's container
-  moodle-development_internal:
+  lti_network:
     external: true

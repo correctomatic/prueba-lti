@@ -3,7 +3,6 @@ from jwcrypto import jwk
 from tempfile import mkdtemp
 
 
-
 # from questions import questions
 # from dbmethods import drop_db_table, create_db_table, get_questions, get_question_by_id, insert_quiz_question, update_question, delete_question
 
@@ -131,14 +130,16 @@ the scopes section in the /config endpoint results defines the permissions that 
 
 (En principio esto no lo uso)
 """
+
+
 @app.route("/config", methods=["GET"])
 def config():
     tool_configuration = {
         "title": "Flask LTI 1.3 Tool",
         "scopes": [
-            "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem",           # This scope allows the tool to create and manage line items, which represent columns in the gradebook.
-            "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",    # This scope grants the tool permission to read the results (grades or scores) associated with a line item. The tool cannot modify the results with this scope.
-            "https://purl.imsglobal.org/spec/lti-ags/scope/score",              # This scope allows the tool to submit scores to the platform. This is often used to update student grades based on their performance in the tool.
+            "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem",  # This scope allows the tool to create and manage line items, which represent columns in the gradebook.
+            "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",  # This scope grants the tool permission to read the results (grades or scores) associated with a line item. The tool cannot modify the results with this scope.
+            "https://purl.imsglobal.org/spec/lti-ags/scope/score",  # This scope allows the tool to submit scores to the platform. This is often used to update student grades based on their performance in the tool.
         ],
         "extensions": [
             {
@@ -151,49 +152,50 @@ def config():
             }
         ],
         "public_jwk_url": "https://your-domain.com/jwks",
-        "redirect_uris": [
-            "https://your-domain.com/lti/launch"
-        ],
+        "redirect_uris": ["https://your-domain.com/lti/launch"],
         "custom_fields": {"field1": "$Context.id", "field2": "$ResourceLink.id"},
     }
     return jsonify(tool_configuration)
 
 
-@app.route('/jwks', methods=['GET'])
+@app.route("/jwks", methods=["GET"])
 def jwks():
-    __location__ = os.path.realpath(   os.path.join(os.getcwd(), os.path.dirname(__file__)) )
-    public_key_path = os.path.join(__location__, 'configs', 'public.key')
+    __location__ = os.path.realpath(
+        os.path.join(os.getcwd(), os.path.dirname(__file__))
+    )
+    public_key_path = os.path.join(__location__, "configs", "public.key")
 
-    with open(public_key_path, 'rb') as public_key_file:
+    with open(public_key_path, "rb") as public_key_file:
         public_key = public_key_file.read()
 
     key = jwk.JWK.from_pem(public_key)
     jwk_data = key.export(as_dict=True)
-    jwks = {
-        'keys': [jwk_data]
-    }
+    jwks = {"keys": [jwk_data]}
     return jsonify(jwks)
+
 
 if __name__ == "__main__":
 
-
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Remote debugging with VS Code
-    #-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     import debugpy
-    debugger_attached_env_var = 'DEBUGGER_ATTACHED'
+
+    debugger_attached_env_var = "DEBUGGER_ATTACHED"
     # Check if the debugger is not already attached
-    if os.getenv(debugger_attached_env_var) != '1':
+    if os.getenv(debugger_attached_env_var) != "1":
         debugpy.listen(("0.0.0.0", 5678))
-        print("Waiting for debugger attach...")
+        # No need to wait for the debugger to attach if you don't need to
+        # debug until the first request
+        # print("Waiting for debugger attach...")
         # debugpy.wait_for_client()
 
         # Set the environment variable to indicate debugger attachment
-        os.environ[debugger_attached_env_var] = '1'
-    #-------------------------------------------------------------------------
+        os.environ[debugger_attached_env_var] = "1"
+    # -------------------------------------------------------------------------
 
     try:
-        app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=True)
+        app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=True)
     # The exception is for avoiding pausing the debugger when the app reloads
     except SystemExit as e:
         pass

@@ -20,6 +20,10 @@ https://edutechdev.com/2023/11/23/build-a-simple-lms-integrated-quiz-app-using-p
 
 https://edutechdev.com/2023/02/10/lti-moodle-integration-using-pylti-1-3-flask-game-example/
 
+## Library documentation
+
+https://github.com/dmitry-viskov/pylti1.3
+
 
 ## Generate key pairs
 
