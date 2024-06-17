@@ -85,7 +85,7 @@ def get_jwk_from_public_key(key_name):
 ###############################################################
 # LTI-related routes
 ###############################################################
-@app.route("/login/", methods=["GET", "POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     tool_conf = ToolConfJsonFile(get_lti_config_path())
     launch_data_storage = get_launch_data_storage()
