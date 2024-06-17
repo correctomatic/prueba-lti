@@ -25,12 +25,6 @@ var launchId = "{{ launch_id }}";
     </ul>
 </div>
 {% else %}
-
-<ul>
-  <li><a href="/banana">Banana</a></li>
-  <li><a href="/papaya">Papaya</a></li>
-</ul>
-
 <h3 style="text-align: center;">Flask example (difficulty: {{ curr_diff }})</h3>
 <div id="game-screen">
     <div style="position:absolute;width:1000px;margin-left:-500px;left:50%; display:block">

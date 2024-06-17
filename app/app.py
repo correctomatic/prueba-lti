@@ -175,8 +175,21 @@ def launch():
         'curr_user_name': message_launch_data.get('name', ''),
         'curr_diff': difficulty
     }
-    return render_template('game.html', **tpl_kwargs)
+    # return render_template('game.html', **tpl_kwargs)
+    # Redirects to index
+    return redirect(url_for('index'))
 
+@app.route('/', methods=['GET'])
+def index():
+    return render_template('game.html')
+
+@app.route('/banana', methods=['GET'])
+def banana():
+    return render_template('banana.html')
+
+@app.route('/papaya', methods=['GET'])
+def papaya():
+    return render_template('papaya.html')
 
 @app.route('/configure/<launch_id>/<difficulty>/', methods=['GET', 'POST'])
 def configure(launch_id, difficulty):
