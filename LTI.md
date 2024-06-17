@@ -155,6 +155,10 @@ https://moodle.org/mod/forum/discuss.php?d=455240
 
 ## Contents of JWT token
 
+It seems it goes in the /launch request
+
+https://dinochiesa.github.io/jwt/
+
 #### Header
 
 

@@ -178,6 +178,27 @@ def launch():
     return render_template('game.html', **tpl_kwargs)
 
 
+@app.route('/configure/<launch_id>/<difficulty>/', methods=['GET', 'POST'])
+def configure(launch_id, difficulty):
+    tool_conf = ToolConfJsonFile(get_lti_config_path())
+    flask_request = FlaskRequest()
+    launch_data_storage = get_launch_data_storage()
+    message_launch = ExtendedFlaskMessageLaunch.from_cache(launch_id, flask_request, tool_conf,
+                                                           launch_data_storage=launch_data_storage)
+
+    if not message_launch.is_deep_link_launch():
+        raise Forbidden('Must be a deep link!')
+
+    launch_url = url_for('launch', _external=True)
+
+    resource = DeepLinkResource()
+    resource.set_url(launch_url + '?difficulty=' + difficulty) \
+        .set_custom_params({'difficulty': difficulty}) \
+        .set_title('Breakout ' + difficulty + ' mode!')
+
+    html = message_launch.get_deep_link().output_response_form([resource])
+    return html
+
 @app.route('/api/score/<launch_id>/<earned_score>/<time_spent>/', methods=['POST'])
 def score(launch_id, earned_score, time_spent):
     tool_conf = ToolConfJsonFile(get_lti_config_path())
