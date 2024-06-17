@@ -1,5 +1,11 @@
 <moodle_release>3.11.17+ (Build: 20231201)</moodle_release>
 
+
+WTF is the deployment id?
+
+
+
+
 ### LTI
 
 DIAGRAMA MUY BUENO CON EXPLICACIONES!!!:
@@ -144,3 +150,86 @@ He habilitado, en Plugins del site administration:
 No ha funcionado, en algún post he visto que no está para eso
 
 https://moodle.org/mod/forum/discuss.php?d=455240
+
+
+
+## Contents of JWT token
+
+#### Header
+
+
+```json
+{
+  "typ": "JWT",
+  "alg": "RS256",
+  "kid": "cefa8577367453582242"
+}
+```
+
+#### Payload
+
+```json
+{
+  "nonce": "2c113b24fa1e4813849c046ed4a1200d02b639b42c8211ef81d00242ac14000a",
+  "iat": 1718612237,
+  "exp": 1718612297,
+  "iss": "http://moodle.lti",
+  "aud": "omwFNMbTxqqMpAP",
+  "https://purl.imsglobal.org/spec/lti/claim/deployment_id": "1",
+  "https://purl.imsglobal.org/spec/lti/claim/target_link_uri": "http://app.lti:5000/launch",
+  "sub": "2",
+  "https://purl.imsglobal.org/spec/lti/claim/lis": {
+    "person_sourcedid": "",
+    "course_section_sourcedid": ""
+  },
+  "https://purl.imsglobal.org/spec/lti/claim/roles": [
+    "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator",
+    "http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor",
+    "http://purl.imsglobal.org/vocab/lis/v2/system/person#Administrator"
+  ],
+  "https://purl.imsglobal.org/spec/lti/claim/context": {
+    "id": "2",
+    "label": "curso1",
+    "title": "Curso 1",
+    "type": [
+      "CourseSection"
+    ]
+  },
+  "https://purl.imsglobal.org/spec/lti/claim/resource_link": {
+    "title": "Prueba lti 1",
+    "description": "",
+    "id": "1"
+  },
+  "https://purl.imsglobal.org/spec/lti-bo/claim/basicoutcome": {
+    "lis_result_sourcedid": "{\"data\":{\"instanceid\":\"1\",\"userid\":\"2\",\"typeid\":\"1\",\"launchid\":369587315},\"hash\":\"a6ce32b2c3f7529a625af91668985b71f7a7930733c9917f8c7b2bcf09efb144\"}",
+    "lis_outcome_service_url": "http://moodle.lti/mod/lti/service.php"
+  },
+  "given_name": "Admin",
+  "family_name": "User",
+  "name": "Admin User",
+  "https://purl.imsglobal.org/spec/lti/claim/ext": {
+    "user_username": "admin",
+    "lms": "moodle-2"
+  },
+  "email": "spam1@gammu.com",
+  "https://purl.imsglobal.org/spec/lti/claim/launch_presentation": {
+    "locale": "en",
+    "document_target": "iframe",
+    "return_url": "http://moodle.lti/mod/lti/return.php?course=2&launch_container=3&instanceid=1&sesskey=ZCkLzHxehT"
+  },
+  "https://purl.imsglobal.org/spec/lti/claim/tool_platform": {
+    "product_family_code": "moodle",
+    "version": "2021051718",
+    "guid": "moodle.lti",
+    "name": "cursodepruebas",
+    "description": "Curso de pruebas"
+  },
+  "https://purl.imsglobal.org/spec/lti/claim/version": "1.3.0",
+  "https://purl.imsglobal.org/spec/lti/claim/message_type": "LtiResourceLinkRequest"
+}
+```
+
+### Grades and lineitems
+
+https://docs.moodle.org/dev/LTI_Gradebook_Services
+
